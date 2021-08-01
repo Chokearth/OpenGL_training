@@ -13,39 +13,50 @@
 #include "graphics/EBO.h"
 #include "graphics/Texture.h"
 
-int width = 800;
-int height = 800;
-float factor = 1.0f;
-float textureFactor = 1.0f;
+// Width of the texture
+int width = 400;
+// Height of the texture
+int height = 400;
+// Factor size of the window compared to the quad
+float factor = 2.0f;
+// Number of repetition of the texture
+float textureFactor = 2.0f;
 
+// List of vertices
 GLfloat vertices[] = {
         //    POSITION    / TexCoord
-        -1.0f, -1.0f , .0f, .0f, .0f, // Lower left
-        1.0f, -1.0f , .0f, textureFactor, .0f, // Lower right
-        -1.0f, 1.0f , .0f, .0f, textureFactor, // Upper left
-        1.0f, 1.0f , .0f, textureFactor, textureFactor// Upper right
+        -1.0f, -1.0f, .0f, .0f, .0f, // Lower left
+        1.0f, -1.0f, .0f, textureFactor, .0f, // Lower right
+        -1.0f, 1.0f, .0f, .0f, textureFactor, // Upper left
+        1.0f, 1.0f, .0f, textureFactor, textureFactor// Upper right
 };
 
+// List of indices
 GLuint indices[] = {
         0, 1, 2,
         1, 2, 3
 };
 
+// vector 2 struct compatible with the shader
 struct alignas(8) vec2 {
     float x, y;
 };
 
+// Number of agent
 const uint numAgents = 200000;
+// Agent structure
 struct Agent {
     vec2 position;
     float angle;
 };
 
+// Generate a random float between min and max
 float randFloat(float min, float max) {
-    return min + static_cast<float> (rand()) / static_cast<float>(RAND_MAX/(max-min));
+    return min + static_cast<float> (rand()) / static_cast<float>(RAND_MAX / (max - min));
 }
 
 int main() {
+    // Init rand
     srand(time(NULL));
 
     // Initialize GLFW
@@ -58,7 +69,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create the windows
-    GLFWwindow *window = glfwCreateWindow(width*factor, height*factor, "OpenGL", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(width * factor, height * factor, "OpenGL", NULL, NULL);
     if (window == NULL) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -70,7 +81,7 @@ int main() {
     gladLoadGL();
 
     //Specify the viewport of OpenGL in the Window
-    glViewport(0, 0, width*factor, height*factor);
+    glViewport(0, 0, width * factor, height * factor);
 
     // Load shader program
     Shader shaderProgram("shaders/basic.vert", "shaders/basic.frag");
@@ -85,7 +96,7 @@ int main() {
 
     // Link VBO to VAO
     VAO1.linkVBO(VBO1, 0, 3, GL_FLOAT, 5 * sizeof(float), 0);
-    VAO1.linkVBO(VBO1, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3*sizeof(float)));
+    VAO1.linkVBO(VBO1, 1, 2, GL_FLOAT, 5 * sizeof(float), (void *) (3 * sizeof(float)));
     // Unbind
     VAO1.unbind();
     VBO1.unbind();
@@ -93,26 +104,27 @@ int main() {
 
     // Texture
     Texture trailMap(width, height, GL_TEXTURE_2D, GL_TEXTURE1, GL_RGBA32F, GL_FLOAT);
-//    trailMap.texUnit(shaderProgram, "tex0", 0);
-Texture diffusedTrailMap(width, height, GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA32F, GL_FLOAT);
+    Texture diffusedTrailMap(width, height, GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA32F, GL_FLOAT);
     diffusedTrailMap.texUnit(shaderProgram, "tex0", 0);
 
     /* --- Slime compute shader --- */
     GLuint slimeComputeShaderID;
     GLuint slimeProgramID;
-    char * computeShader = 0;
+    char *computeShader = 0;
 
     // Load and compile
     slimeComputeShaderID = glCreateShader(GL_COMPUTE_SHADER);
     load_shader(&computeShader, "shaders/slime.comp");
     compile_shader(slimeComputeShaderID, computeShader);
 
-    // shader program to manage the computeShader
+    // shader program to manage the compute shader
     slimeProgramID = glCreateProgram();
 
+    // Attach the compute shader to the program
     glAttachShader(slimeProgramID, slimeComputeShaderID);
     glLinkProgram(slimeProgramID);
     glDeleteShader(slimeComputeShaderID);
+
     /* --- Diffuse compute shader --- */
     GLuint DiffuseComputeShaderID;
     GLuint diffuseProgramID;
@@ -123,9 +135,10 @@ Texture diffusedTrailMap(width, height, GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA32F, 
     load_shader(&computeShader, "shaders/diffuse.comp");
     compile_shader(DiffuseComputeShaderID, computeShader);
 
-    // shader program to manage the computeShader
+    // shader program to manage the compute shader
     diffuseProgramID = glCreateProgram();
 
+    // Attach the compute shader to the program
     glAttachShader(diffuseProgramID, DiffuseComputeShaderID);
     glLinkProgram(diffuseProgramID);
     glDeleteShader(DiffuseComputeShaderID);
@@ -143,98 +156,117 @@ Texture diffusedTrailMap(width, height, GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA32F, 
     GLuint heightUniIDD = glGetUniformLocation(diffuseProgramID, "height");
 
     /* --- Structured buffer --- */
+
+    // Generate agents
     Agent agents[numAgents];
     for (int i = 0; i < numAgents; i++) {
         agents[i] = {
                 {
-                    static_cast<float>(width/2),
-                    static_cast<float>(height/2)
+                        static_cast<float>(width / 2),
+                        static_cast<float>(height / 2)
                 },
                 randFloat(-M_PI, M_PI)
         };
     }
 
+    // Create the buffer
     GLuint agentsBuffer;
     glGenBuffers(1, &agentsBuffer);
+    // Bind the buffer
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, agentsBuffer);
+    // Transfer the data to the buffer
     glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(agents), agents, GL_STATIC_DRAW);
+    // Bind the buffer to a location
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, agentsBuffer);
+    // Unbind the buffer
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-    // Wait a bit
-//    uint wait_time = duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-//    uint wait_now;
-//    do {
-//        glfwPollEvents();
-//        wait_now = duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-//    } while (wait_now - wait_time < 5000 && !glfwWindowShouldClose(window));
-
-    GLuint prevTime = duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    // To get the delta time
+    GLuint prevTime = duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch()).count();
     while (!glfwWindowShouldClose(window)) {
+        // Poll window event
         glfwPollEvents();
 
+        // Clear background
         glClearColor(.0f, .0f, 1.0f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
-        shaderProgram.activate();
 
+        // Load the program to use
+        shaderProgram.activate();
         VAO1.bind();
 
+        // Bind the texture
         diffusedTrailMap.bind();
 
+        // Draw the triangles
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        // Reset texture
-//        uint32_t  z = 0;
-//        glClearTexImage(trailMap.ID, 0, GL_RGBA, GL_FLOAT, &z);
-glCopyImageSubData(diffusedTrailMap.ID, GL_TEXTURE_2D, 0, 0, 0, 0, trailMap.ID, GL_TEXTURE_2D, 0, 0, 0, 0, width, height, 1);
+        // Copy diffused trail to the trail texture
+        glCopyImageSubData(diffusedTrailMap.ID, GL_TEXTURE_2D, 0, 0, 0, 0, trailMap.ID, GL_TEXTURE_2D, 0, 0, 0, 0,
+                           width, height, 1);
 
-        // Use the computeShader
-        glAttachShader(slimeProgramID, slimeComputeShaderID);
-        glLinkProgram(slimeProgramID);
+        /* --- Slime simulation --- */
+        // Load the program
         glUseProgram(slimeProgramID);
+        // Bind the texture and bind it as an output buffer to the shader
         trailMap.bind();
         glBindImageTexture(0, trailMap.ID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
-        GLuint time = duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        // Update the uniform
+        GLuint time = duration_cast<std::chrono::milliseconds>(
+                std::chrono::system_clock::now().time_since_epoch()).count();
         glUniform1ui(timeUniIDS, time);
-        glUniform1f(deltaTimeUniIDS, static_cast<float>(time-prevTime)/1000.0f);
+        glUniform1f(deltaTimeUniIDS, static_cast<float>(time - prevTime) / 1000.0f);
         glUniform1ui(numAgentsUniIDS, numAgents);
         glUniform1i(widthUniIDS, width);
         glUniform1i(heightUniIDS, height);
 
+        // Bind the agents buffer
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, agentsBuffer);
 
-        glDispatchCompute(numAgents/100+1, 1, 1);
+        // Compute the shader
+        glDispatchCompute(numAgents / 100 + 1, 1, 1);
+        // Wait for the computation to end
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
+        // Unbind the agents buffer, texture and the program
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
         glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
         trailMap.unbind();
         glUseProgram(0);
 
         /* --- Diffuse --- */
+        // Load the program
         glUseProgram(diffuseProgramID);
+        // Bind the texture and bind it as an output buffer to the shader
         trailMap.bind();
         diffusedTrailMap.bind();
         glBindImageTexture(0, trailMap.ID, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
         glBindImageTexture(1, diffusedTrailMap.ID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
+        // Update the uniform
         glUniform1ui(timeUniIDD, time);
-        glUniform1f(deltaTimeUniIDD, static_cast<float>(time-prevTime)/1000.0f);
+        glUniform1f(deltaTimeUniIDD, static_cast<float>(time - prevTime) / 1000.0f);
         glUniform1i(widthUniIDD, width);
         glUniform1i(heightUniIDD, height);
 
+        // Compute the shader
         glDispatchCompute(40, 40, 1);
+        // Wait for the computation to end
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+        // Unbind the agents buffer, texture and the program
         glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
         glBindImageTexture(1, 0, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
         diffusedTrailMap.unbind();
         trailMap.unbind();
         glUseProgram(0);
 
+        // Update prevTime
         prevTime = time;
 
+        // Swap the display buffer
         glfwSwapBuffers(window);
     }
 

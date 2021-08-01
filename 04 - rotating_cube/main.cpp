@@ -3,7 +3,6 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -12,6 +11,7 @@
 #include "graphics/EBO.h"
 #include "graphics/Texture.h"
 
+// List of vertices
 GLfloat vertices[] = {
         //    POSITION    / TexCoord
         // Front
@@ -46,6 +46,7 @@ GLfloat vertices[] = {
         .5f, -.5f , -.5f, 2.f, .0f, // Lower right
 };
 
+// List of indices
 GLuint indices[] = {
         // Front
         3, 2, 1,
@@ -116,27 +117,36 @@ int main() {
 
     // Texture
     Texture bricksTex("res/textures/bricks.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
-
     bricksTex.texUnit(shaderProgram, "tex0", 0);
 
+    // Rotation variable
     float rotation = .0f;
 
+    // Allow the triangle to be rendered on only one side
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
     while (!glfwWindowShouldClose(window)) {
+        // Clear background
         glClearColor(.0f, .0f, .0f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        shaderProgram.activate();
 
+        // Load the program to use
+        shaderProgram.activate();
+        VAO1.bind();
+
+        // Create the 3D matrix
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 proj = glm::mat4(1.0f);
 
+        // Rotate the cube
         model = glm::rotate(model, glm::radians(rotation), glm::vec3(1.0f, .5f, 1.0f));
+        // Configure the camera
         view = glm::translate(view, glm::vec3(.0f, .0f, -3.0f));
         proj = glm::perspective(glm::radians(45.0f), (float)(width/height), .1f, 100.0f);
 
+        // Pass the matrix as uniform
         GLuint modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         GLuint viewLoc = glGetUniformLocation(shaderProgram.ID, "view");
@@ -144,16 +154,19 @@ int main() {
         GLuint projLoc = glGetUniformLocation(shaderProgram.ID, "proj");
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
 
+        // Update the rotation
         rotation += 1.5f;
 
+        // Bind the texture
         bricksTex.bind();
 
-        VAO1.bind();
-
+        // Draw the triangles
         glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 
+        // Swap the display buffer
         glfwSwapBuffers(window);
 
+        // Poll window event
         glfwPollEvents();
     }
 

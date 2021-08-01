@@ -7,24 +7,31 @@
 
 #include <math.h>
 
+// Load the shader in a char*
 void loadShader(char ** shaderBuffer, char *path) {
+    // Open file
     std::ifstream file(path);
     if (!file.is_open()) {
         std::cerr << "Could not open shader file \"" << path << "\"" << std::endl;
         return;
     }
 
+    // Convert to string
     std::string ret = std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
 
+    // Convert to char *
     (*shaderBuffer) = new char[ret.length() + 1];
     std::strcpy((*shaderBuffer), ret.c_str());
 }
 
+// Compile a shader
 void compileShader(GLuint shaderID, char *source) {
+    // Compile
     glShaderSource(shaderID, 1, &source, NULL);
     glCompileShader(shaderID);
 
+    // Error management
     GLint result = GL_FALSE;
     int infoLogLength = 1024;
     char shaderErrorMessage[1024] = {0};
@@ -36,12 +43,14 @@ void compileShader(GLuint shaderID, char *source) {
         std::cerr << shaderErrorMessage << std::endl;
 }
 
+// List of vertices
 GLfloat vertices[] = {
         -.5f, -.5f * float(sqrt(3)) / 3, .0f,
         .5f, -.5f * float(sqrt(3)) / 3, .0f,
         -.0f, .5f * float(sqrt(3)) * 2 / 3, .0f
 };
 
+// List of indices
 GLuint indices[] = {
         0, 1, 2
 };
@@ -74,21 +83,26 @@ int main() {
     // Load shader program
     GLuint shaderProgram = glCreateProgram();
     {
+        // char * that will contain the shader source code
         char * vertexShaderSource;
         char * fragmentShaderSource;
 
+        // Load Vertex shader
         loadShader(&vertexShaderSource, "./shaders/basic.vert");
         GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
         compileShader(vertexShader, vertexShaderSource);
 
+        // Load Fragment shader
         loadShader(&fragmentShaderSource, "./shaders/basic.frag");
         GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
         compileShader(fragmentShader, fragmentShaderSource);
 
+        // Attach the shaders to the program
         glAttachShader(shaderProgram, vertexShader);
         glAttachShader(shaderProgram, fragmentShader);
         glLinkProgram(shaderProgram);
 
+        // Free memory by deleting the shader now that there are loaded in the program
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
     }
@@ -130,15 +144,21 @@ int main() {
     glfwSwapBuffers(window);
 
     while (!glfwWindowShouldClose(window)) {
+        // Clear background
         glClearColor(.0f, .0f, .0f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        // Load the program to use
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
 
+        // Draw the triangles
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
+        // Swap the display buffer
         glfwSwapBuffers(window);
 
+        // Poll window event
         glfwPollEvents();
     }
 

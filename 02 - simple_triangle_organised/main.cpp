@@ -10,12 +10,14 @@
 #include "graphics/VAO.h"
 #include "graphics/EBO.h"
 
+// List of vertices
 GLfloat vertices[] = {
         -.5f, -.5f * float(sqrt(3)) / 3, .0f,
         .5f, -.5f * float(sqrt(3)) / 3, .0f,
         -.0f, .5f * float(sqrt(3)) * 2 / 3, .0f
 };
 
+// List of indices
 GLuint indices[] = {
         0, 1, 2
 };
@@ -68,19 +70,25 @@ int main() {
     float rotation = 0.0f;
 
     while (!glfwWindowShouldClose(window)) {
+        // Clear background
         glClearColor(.0f, .0f, .0f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
-        shaderProgram.activate();
 
+        // Load the program to use
+        shaderProgram.activate();
+        VAO1.bind();
+
+        // Set the value of the uniform
         glUniform1f(rotationUniID, rotation);
         rotation += 0.01f;
 
-        VAO1.bind();
-
+        // Draw the triangles
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
+        // Swap the display buffer
         glfwSwapBuffers(window);
 
+        // Poll window event
         glfwPollEvents();
     }
 

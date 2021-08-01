@@ -9,14 +9,16 @@
 #include "graphics/EBO.h"
 #include "graphics/Texture.h"
 
+// List of vertices
 GLfloat vertices[] = {
         //    POSITION    / TexCoord
-        -.5f, -.5f , .0f, .0f, .0f, // Lower left
-        .5f, -.5f , .0f, 1.f, .0f, // Lower right
-        -.5f, .5f , .0f, .0f, 1.f, // Upper left
-        .5f, .5f , .0f, 1.f, 1.f// Upper right
+        -.5f, -.5f, .0f, .0f, .0f, // Lower left
+        .5f, -.5f, .0f, 1.f, .0f, // Lower right
+        -.5f, .5f, .0f, .0f, 1.f, // Upper left
+        .5f, .5f, .0f, 1.f, 1.f// Upper right
 };
 
+// List of indices
 GLuint indices[] = {
         0, 1, 2,
         1, 2, 3
@@ -60,7 +62,7 @@ int main() {
 
     // Link VBO to VAO
     VAO1.linkVBO(VBO1, 0, 3, GL_FLOAT, 5 * sizeof(float), 0);
-    VAO1.linkVBO(VBO1, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3*sizeof(float)));
+    VAO1.linkVBO(VBO1, 1, 2, GL_FLOAT, 5 * sizeof(float), (void *) (3 * sizeof(float)));
     // Unbind
     VAO1.unbind();
     VBO1.unbind();
@@ -73,43 +75,55 @@ int main() {
     /* --- Compute shader --- */
     GLuint computeShaderID;
     GLuint csProgramID;
-    char * computeShader = 0;
+    char *computeShader = 0;
 
     // Load and compile
     computeShaderID = glCreateShader(GL_COMPUTE_SHADER);
     load_shader(&computeShader, "shaders/compute.comp");
     compile_shader(computeShaderID, computeShader);
 
-    // shader program to manage the computeShader
+    // Shader program to manage the compute shader
     csProgramID = glCreateProgram();
 
+    // Attach the compute shader to the program
     glAttachShader(csProgramID, computeShaderID);
     glLinkProgram(csProgramID);
     glDeleteShader(computeShaderID);
 
-    // Use the computeShader
+    // Use the compute shader
+    // Load the program
     glUseProgram(csProgramID);
+    // Bind the texture and bind it as an output buffer to the shader
     texture.bind();
     glBindImageTexture(0, texture.ID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+    // Compute the shader
     glDispatchCompute(40, 40, 1);
+    // Wait for the computation to end
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+    // Unbind the texture and the program
     glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
     texture.unbind();
     glUseProgram(0);
 
     while (!glfwWindowShouldClose(window)) {
+        // Poll window event
         glfwPollEvents();
 
+        // Clear background
         glClearColor(.0f, .0f, 1.0f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
-        shaderProgram.activate();
 
+        // Load the program to use
+        shaderProgram.activate();
         VAO1.bind();
 
+        // Bind the texture
         texture.bind();
 
+        // Draw the triangles
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+        // Swap the display buffer
         glfwSwapBuffers(window);
     }
 

@@ -13,6 +13,7 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
     stbi_set_flip_vertically_on_load(true);
     unsigned char* bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 0);
 
+    // Create the texture
     glGenTextures(1, &ID);
     glActiveTexture(slot);
     glBindTexture(type, ID);
@@ -23,18 +24,22 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
     glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexImage2D(type, 0, format, widthImg, heightImg, 0, format, pixelType, bytes);
+    // Copy the image to the texture
+    glTexImage2D(type, 0, format, widthImg, heightImg, 0, GL_RGBA, pixelType, bytes);
     glGenerateMipmap(type);
 
+    // Free space
     stbi_image_free(bytes);
+
+    // Unbind
     glBindTexture(type, 0);
 }
 
 // Put the uniform of the Shader Program
 void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit) {
-    GLuint tex0Uni = glGetUniformLocation(shader.ID, uniform);
+    GLuint texUni = glGetUniformLocation(shader.ID, uniform);
     shader.activate();
-    glUniform1i(unit, 0);
+    glUniform1i(texUni, unit);
 }
 // Bind the Texture
 void Texture::bind() {

@@ -9,6 +9,7 @@
 #include "graphics/EBO.h"
 #include "graphics/Texture.h"
 
+// List of vertices
 GLfloat vertices[] = {
         //    POSITION    / TexCoord
         -.5f, -.5f , .0f, .0f, .0f, // Lower left
@@ -17,6 +18,7 @@ GLfloat vertices[] = {
         .5f, .5f , .0f, 2.f, 2.f// Upper right
 };
 
+// List of indices
 GLuint indices[] = {
         0, 1, 2,
         1, 2, 3
@@ -72,24 +74,31 @@ int main() {
 
     // Texture
     Texture bricksTex("res/textures/bricks.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
-
     bricksTex.texUnit(shaderProgram, "tex0", 0);
 
     while (!glfwWindowShouldClose(window)) {
+        // Clear background
         glClearColor(.0f, .0f, .0f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        // Load the program to use
         shaderProgram.activate();
-
-        glUniform1f(rotationUniID, rotation);
-        rotation += 0.01f;
-        bricksTex.bind();
-
         VAO1.bind();
 
+        // Set the value of the uniform
+        glUniform1f(rotationUniID, rotation);
+        rotation += 0.01f;
+
+        // Bind the texture
+        bricksTex.bind();
+
+        // Draw the triangles
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+        // Swap the display buffer
         glfwSwapBuffers(window);
 
+        // Poll window event
         glfwPollEvents();
     }
 

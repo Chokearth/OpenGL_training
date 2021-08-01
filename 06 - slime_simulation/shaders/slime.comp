@@ -20,11 +20,11 @@ layout (std430, binding = 3) buffer myBuffer {
 };
 
 float moveSpeed = 50.0f;
-float turnSpeed = 4.0f;
+float turnSpeed = 5.0f;
 
 float sensorAngleRad = 0.5f;
-float sensorOffsetDst = 8.0f;
-int sensorSize = 5;
+float sensorOffsetDst = 5.0f;
+int sensorSize = 3;
 
 float trailWeigth = 10.0f;
 
