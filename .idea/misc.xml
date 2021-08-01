@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$/03 - simple_texture">
+    <contentRoot DIR="$PROJECT_DIR$" />
+  </component>
+  <component name="CidrRootsConfiguration">
+    <sourceRoots>
+      <file path="$PROJECT_DIR$/01 - simple_triangle" />
+      <file path="$PROJECT_DIR$/02 - simple_triangle_organised" />
+      <file path="$PROJECT_DIR$/03 - simple_texture" />
+      <file path="$PROJECT_DIR$/04 - rotating_cube" />
+      <file path="$PROJECT_DIR$/05 - compute_shader" />
+      <file path="$PROJECT_DIR$/06 - slime_simulation" />
+    </sourceRoots>
+  </component>
+</project>
