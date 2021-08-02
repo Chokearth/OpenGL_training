@@ -1,0 +1,129 @@
+# version 460
+
+layout (local_size_x = 100, local_size_y = 1) in;
+
+layout (rgba32f, binding = 0) uniform image2D trail;
+
+uniform uint time;
+uniform float deltaTime;
+uniform uint numAgents;
+uniform int width;
+uniform int height;
+
+struct Agent {
+    vec2 position;
+    float angle;
+};
+
+layout (std430, binding = 3) buffer myBuffer {
+    Agent agents[];
+};
+
+float moveSpeed = 50.0f;
+float turnSpeed = 5.0f;
+
+float sensorAngleRad = 0.5f;
+float sensorOffsetDst = 5.0f;
+int sensorSize = 3;
+
+float trailWeigth = 10.0f;
+
+// Hash function www.cs.ubc.ca/~rbridson/docs/schechter-sca08-turbulence.pdf
+uint hash(uint state)
+{
+    state ^= 2747636419u;
+    state *= 2654435769u;
+    state ^= state >> 16;
+    state *= 2654435769u;
+    state ^= state >> 16;
+    state *= 2654435769u;
+    return state;
+}
+
+float scaleToRange01(uint state)
+{
+    return state / 4294967295.0;
+}
+
+float teleport(float point, float size) {
+    if (point < 0) return point + width;
+    if (point >= size) return point - width;
+    return point;
+}
+
+float sense (Agent agent, float sensorAngleOffset) {
+    float sensorAngle = agent.angle + sensorAngleOffset;
+    vec2 sensorDir = vec2(cos(sensorAngle), sin(sensorAngle));
+
+    vec2 sensorPos = agent.position + sensorDir * sensorOffsetDst;
+    int sensorCentreX = int(sensorPos.x);
+    int sensorCentreY = int(sensorPos.y);
+
+    float sum = 0;
+
+    for (int offsetX = -sensorSize; offsetX <= sensorSize; offsetX++) {
+        for (int offsetY = -sensorSize; offsetY <= sensorSize; offsetY++) {
+//            int sampleX = min(width-1, max(0, sensorCentreX + offsetX));
+//            int sampleY = min(height-1, max(0, sensorCentreY + offsetY));
+            int sampleX = int(teleport(sensorCentreX + offsetX, width-1));
+            int sampleY = int(teleport(sensorCentreY + offsetY, height-1));
+
+            vec4 v = imageLoad(trail, ivec2(sampleX, sampleY));
+            sum += v.x;
+        }
+    }
+
+    return sum;
+}
+
+void main() {
+    // gl_LocalInvocationID.xy * gl_WorkGroupID.xy == gl_GlobalInvocationID
+    ivec2 id = ivec2(gl_GlobalInvocationID);
+
+    if (id.x >= numAgents) return;
+
+    Agent agent = agents[id.x];
+    vec2 pos = agent.position;
+
+    uint random = hash(int(pos.y) * width + int(pos.x) + hash(id.x + time * 100000));
+
+    float weightForward = sense(agent, 0);
+    float weightLeft = sense(agent, sensorAngleRad);
+    float weightRight = sense(agent, -sensorAngleRad);
+
+    float randomSteerStrength = scaleToRange01(random);
+    float turnSpeed = turnSpeed * 2 * 3.1415;
+
+    // Continue in same direction
+    if (weightForward > weightLeft && weightForward > weightRight) agents[id.x].angle += 0;
+    else if (weightForward < weightLeft && weightForward < weightRight) agents[id.x].angle += (randomSteerStrength - 0.5) * 2 * turnSpeed * deltaTime;
+    // Turn right
+    else if (weightRight > weightLeft) agents[id.x].angle -= randomSteerStrength * turnSpeed * deltaTime;
+    // Turn left
+    else if (weightLeft > weightRight) agents[id.x].angle += randomSteerStrength * turnSpeed * deltaTime;
+
+    // Update position
+    vec2 direction = vec2(cos(agent.angle), sin(agent.angle));
+    vec2 newPos = agent.position + direction * deltaTime * moveSpeed;
+
+    // Clamp position to map boundaries, and pick new random move dir if hit boundary
+    if (newPos.x < 0 || newPos.x >= width || newPos.y < 0 || newPos.y > height) {
+//        random = hash(random);
+//        float randomAngle = scaleToRange01(random) * 2 * 3.1415;
+//
+//        newPos.x = min(799, max(0, newPos.x));
+//        newPos.y = min(799, max(0, newPos.y));
+//        agents[id.x].angle = randomAngle;
+
+        newPos.x = teleport(newPos.x, width);
+        newPos.y = teleport(newPos.y, height);
+        vec4 oldTrail = imageLoad(trail, ivec2(newPos));
+        imageStore(trail, ivec2(newPos), vec4(vec3( min(1, oldTrail[0] + trailWeigth * deltaTime*1000.0f) ), 1.0f));
+    }
+    else {
+        vec4 oldTrail = imageLoad(trail, ivec2(newPos));
+        imageStore(trail, ivec2(newPos), vec4(vec3( min(1, oldTrail[0] + trailWeigth * deltaTime*1000.0f) ), 1.0f));
+    }
+
+    agents[id.x].position = newPos;
+}

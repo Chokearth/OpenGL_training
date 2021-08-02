@@ -45,3 +45,7 @@ Use a Compute shader to generate a texture.
 A slime simulation made with Compute shader.
 
 <img height="300" src=".github/images/06.png"/>
+
+### 07 - Slime simulation organised
+
+Same as the previous one but the code as been organised to simplify the management of compute shader.
