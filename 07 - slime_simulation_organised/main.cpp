@@ -21,7 +21,7 @@ int height = 400;
 // Factor size of the window compared to the quad
 float factor = 2.0f;
 // Number of repetition of the texture
-float textureFactor = 2.0f;
+float textureFactor = 1.0f;
 
 // List of vertices
 GLfloat vertices[] = {
@@ -44,7 +44,7 @@ struct alignas(8) vec2 {
 };
 
 // Number of agent
-const uint numAgents = 200000;
+const uint numAgents = 100000;
 // Agent structure
 struct Agent {
     vec2 position;

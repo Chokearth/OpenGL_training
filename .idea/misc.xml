@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$/07 - slime_simulation_organised">
+  <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$/08 - camera_movement">
     <contentRoot DIR="$PROJECT_DIR$" />
   </component>
   <component name="CidrRootsConfiguration">
@@ -12,6 +12,7 @@
       <file path="$PROJECT_DIR$/05 - compute_shader" />
       <file path="$PROJECT_DIR$/06 - slime_simulation" />
       <file path="$PROJECT_DIR$/07 - slime_simulation_organised" />
+      <file path="$PROJECT_DIR$/08 - camera_movement" />
     </sourceRoots>
   </component>
 </project>

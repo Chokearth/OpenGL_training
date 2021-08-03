@@ -9,6 +9,7 @@ Project(s) | Resource
 01-04 | https://www.youtube.com/watch?v=45MIykWJ-C4
 05 | https://zestedesavoir.com/tutoriels/1554/introduction-aux-compute-shaders/
 06 | https://github.com/SebLague/Slime-Simulation
+08 | https://www.youtube.com/watch?v=45MIykWJ-C4
 
 ## Projects
 
@@ -49,3 +50,7 @@ A slime simulation made with Compute shader.
 ### 07 - Slime simulation organised
 
 Same as the previous one but the code as been organised to simplify the management of compute shader.
+
+### 08 - Camera movement
+
+A cube and  camera movement controller to move.

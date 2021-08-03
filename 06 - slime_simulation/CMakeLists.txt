@@ -15,7 +15,7 @@ target_link_libraries(${TARGET} glfw)
 
 ADD_CUSTOM_TARGET(
         copy_shader_files
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${item} $<TARGET_FILE_DIR:${TARGET}>/${item}
+        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:${TARGET}>/shaders
 )
 ADD_DEPENDENCIES(${TARGET} copy_shader_files)
 

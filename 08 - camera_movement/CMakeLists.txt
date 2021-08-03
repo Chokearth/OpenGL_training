@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 project(OpenGLTraining)
 
 set(CMAKE_CXX_STANDARD 23)
-set(TARGET slimeSimulationOrganised)
+set(TARGET CameraMovement)
 
 find_package(glfw3 3.3 REQUIRED)
 
@@ -19,4 +19,10 @@ ADD_CUSTOM_TARGET(
         ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:${TARGET}>/shaders
 )
 ADD_DEPENDENCIES(${TARGET} copy_shader_files)
+
+ADD_CUSTOM_TARGET(
+        copy_res_files
+        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res $<TARGET_FILE_DIR:${TARGET}>/res
+)
+ADD_DEPENDENCIES(${TARGET} copy_res_files)
 
