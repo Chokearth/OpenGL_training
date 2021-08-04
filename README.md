@@ -9,7 +9,7 @@ Project(s) | Resource
 01-04 | https://www.youtube.com/watch?v=45MIykWJ-C4
 05 | https://zestedesavoir.com/tutoriels/1554/introduction-aux-compute-shaders/
 06 | https://github.com/SebLague/Slime-Simulation
-08 | https://www.youtube.com/watch?v=45MIykWJ-C4
+08-09 | https://www.youtube.com/watch?v=45MIykWJ-C4
 
 ## Projects
 
@@ -53,4 +53,11 @@ Same as the previous one but the code as been organised to simplify the manageme
 
 ### 08 - Camera movement
 
-A cube and  camera movement controller to move.
+A cube and camera movement controller to move.
+
+### 08 - Light
+
+A cube and a light source. The type of the light can be change by changing the function use by basic.frag. There is 3 light source type:  
+* spotlight
+* direct light
+* point light
