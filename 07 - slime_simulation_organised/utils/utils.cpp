@@ -5,7 +5,7 @@
 #include "utils.h"
 
 // Load a file to a char array
-void load_file(char ** shaderBuffer, const char *path) {
+void load_file(char ** charBuffer, const char *path) {
     // Open file
     std::ifstream file(path);
     if (!file.is_open()) {
@@ -18,8 +18,8 @@ void load_file(char ** shaderBuffer, const char *path) {
     file.close();
 
     // Convert to char *
-    (*shaderBuffer) = new char[ret.length() + 1];
-    std::strcpy((*shaderBuffer), ret.c_str());
+    (*charBuffer) = new char[ret.length() + 1];
+    std::strcpy((*charBuffer), ret.c_str());
 }
 
 // Compile a shader

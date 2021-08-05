@@ -5,7 +5,7 @@
 #include "Texture.h"
 
 // Constructor that load the image and create the image
-Texture::Texture(const char* image, const char* texType, GLuint slot, GLenum format, GLenum pixelType) {
+Texture::Texture(const char* image, const char* texType, GLuint slot) {
     type = texType;
 
     // Load image
@@ -25,8 +25,47 @@ Texture::Texture(const char* image, const char* texType, GLuint slot, GLenum for
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    // Copy the image to the texture
-    glTexImage2D(GL_TEXTURE_2D, 0, format, widthImg, heightImg, 0, format, pixelType, bytes);
+    // Determine the type with the number of channel
+    if (numColCh == 4)
+        glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                GL_RGBA,
+                widthImg,
+                heightImg,
+                0,
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                bytes
+                );
+    else if (numColCh == 3)
+        glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                GL_RGBA,
+                widthImg,
+                heightImg,
+                0,
+                GL_RGB,
+                GL_UNSIGNED_BYTE,
+                bytes
+                );
+    else if (numColCh == 1)
+        glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                GL_RGBA,
+                widthImg,
+                heightImg,
+                0,
+                GL_RED,
+                GL_UNSIGNED_BYTE,
+                bytes
+                );
+    else
+        throw std::invalid_argument("Automatic Texture type recognition failed");
+
+    // Generates MipMaps
     glGenerateMipmap(GL_TEXTURE_2D);
 
     // Free space

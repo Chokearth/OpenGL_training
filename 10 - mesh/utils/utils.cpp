@@ -22,6 +22,22 @@ void load_file(char ** shaderBuffer, const char *path) {
     std::strcpy((*shaderBuffer), ret.c_str());
 }
 
+std::string get_file_contents(const char* filename)
+{
+    std::ifstream in(filename, std::ios::binary);
+    if (in)
+    {
+        std::string contents;
+        in.seekg(0, std::ios::end);
+        contents.resize(in.tellg());
+        in.seekg(0, std::ios::beg);
+        in.read(&contents[0], contents.size());
+        in.close();
+        return(contents);
+    }
+    throw(errno);
+}
+
 // Compile a shader
 void compile_shader(GLuint shaderID, const char *source) {
     // Compile

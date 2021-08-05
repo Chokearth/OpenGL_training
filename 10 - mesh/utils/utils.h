@@ -10,6 +10,7 @@
 #include <cstring>
 
 // Load a file to a char array
-void load_file(char ** shaderBuffer, const char *path);
+void load_file(char ** charBuffer, const char *path);
+std::string get_file_contents(const char* filename);
 // Compile a shader
 void compile_shader(GLuint shaderID, const char *source);

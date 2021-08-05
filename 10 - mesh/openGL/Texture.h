@@ -18,7 +18,7 @@ public:
     GLuint unit;
 
     // Constructor that load the image and create the image
-    Texture(const char* image, const char* texType, GLuint slot, GLenum format, GLenum pixelType);
+    Texture(const char* image, const char* texType, GLuint slot);
     // Constructor that create an empty image
     Texture(const int widthImg, const int heightImg, const char* texType, GLuint slot, GLenum format, GLenum pixelType);
 

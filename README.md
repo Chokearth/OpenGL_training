@@ -6,10 +6,10 @@ This is just the projects that I've done to learn own to use OpenGL. I've posted
 
 Project(s) | Resource
 --- | ---
-01-04 | https://www.youtube.com/watch?v=45MIykWJ-C4
+01-04 | https://www.youtube.com/watch?v=XpBGwZNyUh0&list=PLPaoO-vpZnumdcb4tZc4x5Q-v7CkrQ6M-
 05 | https://zestedesavoir.com/tutoriels/1554/introduction-aux-compute-shaders/
 06 | https://github.com/SebLague/Slime-Simulation
-08-09 | https://www.youtube.com/watch?v=45MIykWJ-C4
+08-10 | https://www.youtube.com/watch?v=XpBGwZNyUh0&list=PLPaoO-vpZnumdcb4tZc4x5Q-v7CkrQ6M-
 
 ## Projects
 
@@ -55,9 +55,13 @@ Same as the previous one but the code as been organised to simplify the manageme
 
 A cube and camera movement controller to move.
 
-### 08 - Light
+### 09 - Light
 
-A cube and a light source. The type of the light can be change by changing the function use by basic.frag. There is 3 light source type:  
+A cube and a light source. The type of the light can be change by changing the function use by basic.frag. There is 3 light source type:
 * spotlight
 * direct light
 * point light
+
+### 10 - Mesh
+
+Add a Mesh class and a Model class to load 3D model.
