@@ -71,3 +71,9 @@ Add a Mesh class and a Model class to load 3D model.
 Just a simple Fog effect.
 
 <img height="300" src=".github/images/11.png"/>
+
+### 12 - Depth fog
+
+Add an outline and an FPS indicator.
+
+<img height="300" src=".github/images/12.png"/>

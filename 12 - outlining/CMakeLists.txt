@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 project(OpenGLTraining)
 
 set(CMAKE_CXX_STANDARD 23)
-set(TARGET DepthFog)
+set(TARGET Outlining)
 
 find_package(glfw3 3.3 REQUIRED)
 
