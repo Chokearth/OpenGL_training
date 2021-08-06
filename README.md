@@ -9,7 +9,7 @@ Project(s) | Resource
 01-04 | https://www.youtube.com/watch?v=XpBGwZNyUh0&list=PLPaoO-vpZnumdcb4tZc4x5Q-v7CkrQ6M-
 05 | https://zestedesavoir.com/tutoriels/1554/introduction-aux-compute-shaders/
 06 | https://github.com/SebLague/Slime-Simulation
-08-10 | https://www.youtube.com/watch?v=XpBGwZNyUh0&list=PLPaoO-vpZnumdcb4tZc4x5Q-v7CkrQ6M-
+08-11 | https://www.youtube.com/watch?v=XpBGwZNyUh0&list=PLPaoO-vpZnumdcb4tZc4x5Q-v7CkrQ6M-
 
 ## Projects
 
@@ -65,3 +65,9 @@ A cube and a light source. The type of the light can be change by changing the f
 ### 10 - Mesh
 
 Add a Mesh class and a Model class to load 3D model.
+
+### 11 - Depth fog
+
+Just a simple Fog effect.
+
+<img height="300" src=".github/images/11.png"/>

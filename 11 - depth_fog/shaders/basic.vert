@@ -1,0 +1,28 @@
+#version 460 core
+
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec3 aColor;
+layout (location = 3) in vec2 aTex;
+
+out vec3 currentPosition;
+
+out vec3 Normal;
+out vec3 color;
+out vec2 texCoord;
+
+uniform mat4 camMatrix;
+uniform mat4 model;
+uniform mat4 translation;
+uniform mat4 rotation;
+uniform mat4 scale;
+
+void main() {
+    currentPosition = vec3(model * translation * -rotation * scale * vec4(aPos, 1.0f));
+
+    color = aColor;
+    Normal = aNormal;
+    texCoord = mat2(0.0f, -1.0f, 1.0f, 0.0f) * aTex;
+
+    gl_Position= camMatrix * vec4(currentPosition, 1.0f);
+}
