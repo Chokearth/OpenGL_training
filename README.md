@@ -9,7 +9,7 @@ Project(s) | Resource
 01-04 | https://www.youtube.com/watch?v=XpBGwZNyUh0&list=PLPaoO-vpZnumdcb4tZc4x5Q-v7CkrQ6M-
 05 | https://zestedesavoir.com/tutoriels/1554/introduction-aux-compute-shaders/
 06 | https://github.com/SebLague/Slime-Simulation
-08-11 | https://www.youtube.com/watch?v=XpBGwZNyUh0&list=PLPaoO-vpZnumdcb4tZc4x5Q-v7CkrQ6M-
+08-13 | https://www.youtube.com/watch?v=XpBGwZNyUh0&list=PLPaoO-vpZnumdcb4tZc4x5Q-v7CkrQ6M-
 
 ## Projects
 
@@ -72,8 +72,14 @@ Just a simple Fog effect.
 
 <img height="300" src=".github/images/11.png"/>
 
-### 12 - Depth fog
+### 12 - Outlining
 
 Add an outline and an FPS indicator.
 
 <img height="300" src=".github/images/12.png"/>
+
+### 13 - Frame buffer
+
+Use a frame buffer to do some post-processing.
+
+<img height="300" src=".github/images/13.png"/>

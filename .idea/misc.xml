@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$/12 - outlining">
+  <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$/13 - frame_buffer">
     <contentRoot DIR="$PROJECT_DIR$" />
   </component>
   <component name="CidrRootsConfiguration">
@@ -17,6 +17,7 @@
       <file path="$PROJECT_DIR$/10 - mesh" />
       <file path="$PROJECT_DIR$/11 - depth_fog" />
       <file path="$PROJECT_DIR$/12 - outlining" />
+      <file path="$PROJECT_DIR$/13 - frame_buffer" />
     </sourceRoots>
   </component>
 </project>
