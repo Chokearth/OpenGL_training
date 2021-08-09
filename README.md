@@ -9,7 +9,7 @@ Project(s) | Resource
 01-04 | https://www.youtube.com/watch?v=XpBGwZNyUh0&list=PLPaoO-vpZnumdcb4tZc4x5Q-v7CkrQ6M-
 05 | https://zestedesavoir.com/tutoriels/1554/introduction-aux-compute-shaders/
 06 | https://github.com/SebLague/Slime-Simulation
-08-13 | https://www.youtube.com/watch?v=XpBGwZNyUh0&list=PLPaoO-vpZnumdcb4tZc4x5Q-v7CkrQ6M-
+08-14 | https://www.youtube.com/watch?v=XpBGwZNyUh0&list=PLPaoO-vpZnumdcb4tZc4x5Q-v7CkrQ6M-
 
 ## Projects
 
@@ -83,3 +83,9 @@ Add an outline and an FPS indicator.
 Use a frame buffer to do some post-processing.
 
 <img height="300" src=".github/images/13.png"/>
+
+### 14 - Geometry shader
+
+Use a geometry shader to display the normal of each vertex.
+
+<img height="300" src=".github/images/14.png"/>

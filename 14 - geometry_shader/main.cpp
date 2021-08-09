@@ -3,7 +3,6 @@
 const unsigned int width = 800;
 const unsigned int height = 800;
 
-// Screen rectangle to display the buffer
 float rectangleVertices[] = {
         1.0f , -1.0f, 1.0f, 0.0f,
         -1.0f, -1.0f, 0.0f, 0.0f,
@@ -40,8 +39,8 @@ int main() {
     glViewport(0, 0, width, height);
 
     // Load shader program
-    Shader shaderProgram("shaders/basic.vert", "shaders/basic.frag");
-    Shader framebufferProgram("shaders/framebuffer.vert", "shaders/framebuffer.frag");
+    Shader shaderProgram("shaders/basic.vert", "shaders/basic.frag", "shaders/basic.geom");
+    Shader normalsProgram("shaders/basic.vert", "shaders/normals.frag", "shaders/normals.geom");
 
     // Color of the light
     glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -53,8 +52,6 @@ int main() {
     glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z,
                 lightColor.w);
     glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-    framebufferProgram.activate();
-    glUniform1i(glGetUniformLocation(framebufferProgram.ID, "screenTexture"), 0);
 
     // Allow the triangle to be rendered on only one side
     glEnable(GL_CULL_FACE);
@@ -68,18 +65,6 @@ int main() {
     // Load the model
     Model model("res/models/stuff/ChantierStuff.gltf");
 
-    // Create the rectangle
-    unsigned int rectVAO, rectVBO;
-    glGenVertexArrays(1, &rectVAO);
-    glGenBuffers(1, &rectVBO);
-    glBindVertexArray(rectVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangleVertices), &rectangleVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
-
     // Time variable
     double prevTime = .0;
     double crntTime = .0;
@@ -88,35 +73,6 @@ int main() {
 
     // Disable VSync
 //    glfwSwapInterval(0);
-
-    // Create the Frame Buffer Object
-    unsigned int FBO;
-    glGenFramebuffers(1, &FBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-
-    // Create the texture
-    unsigned int framebufferTexture;
-    glGenTextures(1, &framebufferTexture);
-    glBindTexture(GL_TEXTURE_2D, framebufferTexture);
-    // Set parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebufferTexture, 0);
-
-    // Create the Render Buffer to be the DEPTH and STENCIL buffer
-    unsigned int RBO;
-    glGenRenderbuffers(1, &RBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
-
-    // Error management
-    auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
-        std::cerr << "Framebuffer error: " << fboStatus << std::endl;
 
     while (!glfwWindowShouldClose(window)) {
         // Get the time
@@ -135,12 +91,9 @@ int main() {
             counter = 0;
         }
 
-        // Set our buffer as the current buffer to draw on this buffer.
-        glBindFramebuffer(GL_FRAMEBUFFER, FBO);
         // Clear background
         glClearColor(.25f, .25f, .30f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_DEPTH_TEST);
 
         // Read input to move the camera
         camera.inputs(window);
@@ -148,16 +101,7 @@ int main() {
 
         // Draw the model
         model.draw(shaderProgram, camera);
-
-        // Reset the frame buffer
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        // Activate the program to change the frame buffer
-        framebufferProgram.activate();
-        // Draw the rect and disable depth test to be sure that the rectangle pass the test
-        glBindVertexArray(rectVAO);
-        glDisable(GL_DEPTH_TEST);
-        glBindTexture(GL_TEXTURE_2D, framebufferTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        model.draw(normalsProgram, camera);
 
         // Swap the display buffer
         glfwSwapBuffers(window);
@@ -168,7 +112,6 @@ int main() {
 
     // Destroy everything
     shaderProgram.deleteFromGPU();
-    glDeleteFramebuffers(1, &FBO);
 
     glfwDestroyWindow(window);
     glfwTerminate();
