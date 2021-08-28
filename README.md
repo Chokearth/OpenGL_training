@@ -1,6 +1,6 @@
 # OpenGL training
 
-This is just the projects that I've done to learn own to use OpenGL. I've posted them here in case someone wants some OpenGL examples.
+This is just the projects that I've done to learn how to use OpenGL. I've posted them here in case someone wants some OpenGL examples.
 
 ## Used resource
 
